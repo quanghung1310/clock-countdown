@@ -7,8 +7,8 @@ const initialState = {
 const clockReducer = (state = initialState, action) => {
     switch (action.type) {
         case 'SET_TIMER':
-            const newTimer = action.payload;
-            const timer = new Date(new Date().getTime() + (newTimer || 0) * 60000).getTime();
+            const minutes = action.payload;
+            const timer = new Date(new Date().getTime() + minutes * 60000).getTime();
             return {
                 ...state,
                 timer: timer

@@ -74,17 +74,19 @@ function Clock(props) {
     
         clockInterval = setInterval(() => {
             const now = new Date().getTime();
-            const distance = timer - now;
+            const distance = timer - now + 1000;
     
+            const days = Math.floor(distance / (1000 * 60 * 60 *24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
             if (distance < 0) {
                 clearInterval(clockInterval.current);
             } else {
-                dispatch(setMinutes(minutes));
+                dispatch(setMinutes((days * 24 * 60) + (hours * 60) + minutes));
                 dispatch(setSeconds(seconds));
             }
-        }, 0);
+        }, 1000);
     }
 
     useEffect(() => {

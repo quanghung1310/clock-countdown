@@ -52,7 +52,6 @@ function InputForm(props) {
     function handleSubmit(e) {
         e.preventDefault();
 
-        console.log(timer);
         if (!timer) {
             onSubmit({minutes: 1});
         } else {
