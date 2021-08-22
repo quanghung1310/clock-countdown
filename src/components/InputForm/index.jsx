@@ -2,7 +2,38 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 import { setTimer } from '../../redux/actions/clock';
+
+const Action = styled.div`
+    margin: auto;
+    max-width: 200px;
+`;
+
+const Input = styled.div`
+    margin-top: 30px;
+    position: relative;
+`;
+
+const NumInput = styled.input`
+    width: 100%;
+    border: none;
+    padding: 12px;
+    border-radius: 60px;
+`;
+
+const BtnInput = styled.input`
+    top: 0;
+    right: 0;
+    color: #fff;
+    border: none;
+    border: none;
+    padding: 12px;
+    position: absolute;
+    border-radius: 60px;
+    background-color: #ec366b;
+    text-transform: uppercase;
+`;
 
 InputForm.propTypes = {
     onSubmit: PropTypes.func,
@@ -32,18 +63,18 @@ function InputForm(props) {
     }
 
     return (
-        <div className="action">
-            <div className="input">
+        <Action>
+            <Input>
                 <form onSubmit={handleSubmit}>
-                    <input className="input-num"
+                    <NumInput
                         type="number"
                         min="1"
                         placeholder="Enter Minute"
                         onChange={e => setValue(e.target.value)}/>
-                    <input className="input-btn" type="submit" value="Submit" />
+                    <BtnInput type="submit" value="Submit" />
                 </form>
-            </div>
-        </div>
+            </Input>
+        </Action>
     );
 }
 
