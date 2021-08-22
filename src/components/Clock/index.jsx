@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { updateBackgroundImage, updatePie } from '../../redux/actions/animation';
 import { setMinutes, setSeconds } from '../../redux/actions/clock';
+
+const barColor = '#ec366b';
+const backColor = '#feeff4';
 
 const ClockWrap = styled.div`
     margin: auto;
@@ -25,6 +29,7 @@ const ClockStyle = styled.div`
     margin-top: -90px;
     margin-left: -90px;
     background-color: #feeff4;
+    background-image: ${props => props.backgroundImage};
 
     &:before {
         content: "";
@@ -51,6 +56,17 @@ const Count = styled.span`
     line-height: 50px;
     position: absolute;
     text-align: center;
+
+    &:after {
+        width:100%;
+        display:block;
+        font-size:18px;
+        font-weight:300;
+        line-height:18px;
+        text-align:center;
+        position:relative;
+        content: '${props => (props.minutes > 0 ? 'min' : (props.seconds > 0 ? 'sec' : ''))}';
+    }
 `;
 
 Clock.propTypes = {
@@ -65,9 +81,14 @@ function Clock(props) {
     const {timer} = props;
     const secondsState = useSelector(state => state.clock.seconds);
     const minutesState = useSelector(state => state.clock.minutes);
+    const valueInput = useSelector(state => state.clock.valueInput);
+    const pie = useSelector(state => state.animation.pie);
+    const backgroundImage = useSelector(state => state.animation.backgroundImage);
     const dispatch = useDispatch();
 
     let clockInterval = useRef();
+
+    const lop = valueInput * 60;
 
     const startTimer = () => {
         if (!timer) return;
@@ -82,9 +103,35 @@ function Clock(props) {
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
             if (distance < 0) {
                 clearInterval(clockInterval.current);
+                dispatch(updateBackgroundImage(''));
             } else {
                 dispatch(setMinutes((days * 24 * 60) + (hours * 60) + minutes));
                 dispatch(setSeconds(seconds));
+
+                let newPie;
+                if (minutes > 1) {
+                    newPie = pie + (100 / (lop/valueInput));
+                } else {
+                    newPie = pie + (100 / lop);
+                }
+                if (pie >= 101) {
+                    newPie = 1;
+                }
+
+                dispatch(updatePie(newPie));
+
+                let step = 1;
+                let loops = Math.round(100 / step);
+                let increment = 360 / loops;
+                let half = Math.round(loops / 2);
+                let i = (pie.toFixed(2).slice(0, -3));
+                if (i < half) {
+                    let nextdeg = (90 + (increment * i)) + 'deg';
+                    dispatch(updateBackgroundImage('linear-gradient(90deg,' + backColor + ' 50%,transparent 50%,transparent),linear-gradient(' + nextdeg + ',' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')'));
+                } else {
+                    let nextdeg = (-90 + (increment * (i - half))) + 'deg';
+                    dispatch(updateBackgroundImage('linear-gradient(' + nextdeg + ',' + barColor + ' 50%,transparent 50%,transparent),linear-gradient(270deg,' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')'));
+                }
             }
         }, 1000);
     }
@@ -100,8 +147,12 @@ function Clock(props) {
 
     return (
         <ClockWrap>
-            <ClockStyle>
-                <Count>{minutesState} min {secondsState} sec</Count>
+            <ClockStyle backgroundImage={backgroundImage}>
+                <Count seconds={secondsState}
+                    minutes={minutesState}
+                >
+                    {minutesState > 0 ? minutesState : secondsState}
+                </Count>
             </ClockStyle>
         </ClockWrap>
     );
