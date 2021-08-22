@@ -1,6 +1,5 @@
 const initialState = {
     pie: 0,
-    backgroundImage: '',
 };
 
 const animationReducer = (state = initialState, action) => {
@@ -11,12 +10,6 @@ const animationReducer = (state = initialState, action) => {
                 ...state,
                 pie: newPie,
             };
-        case 'UPDATE_BACKGROUND_IMAGE':
-            const newBackgroundImage = action.payload;
-            return {
-                ...state,
-                backgroundImage: newBackgroundImage,
-            }
         default:
             return state;
     }

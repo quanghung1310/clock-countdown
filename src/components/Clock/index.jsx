@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { updateBackgroundImage, updatePie } from '../../redux/actions/animation';
+import { updatePie } from '../../redux/actions/animation';
 import { setMinutes, setSeconds } from '../../redux/actions/clock';
 
 const barColor = '#ec366b';
@@ -83,7 +83,7 @@ function Clock(props) {
     const minutesState = useSelector(state => state.clock.minutes);
     const valueInput = useSelector(state => state.clock.valueInput);
     const pie = useSelector(state => state.animation.pie);
-    const backgroundImage = useSelector(state => state.animation.backgroundImage);
+    const [backgroundImage, setBackgroundImage] = useState('');
     const dispatch = useDispatch();
 
     let clockInterval = useRef();
@@ -103,7 +103,7 @@ function Clock(props) {
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
             if (distance < 0) {
                 clearInterval(clockInterval.current);
-                dispatch(updateBackgroundImage(''));
+                setBackgroundImage('none');
             } else {
                 dispatch(setMinutes((days * 24 * 60) + (hours * 60) + minutes));
                 dispatch(setSeconds(seconds));
@@ -127,10 +127,10 @@ function Clock(props) {
                 let i = (pie.toFixed(2).slice(0, -3));
                 if (i < half) {
                     let nextdeg = (90 + (increment * i)) + 'deg';
-                    dispatch(updateBackgroundImage('linear-gradient(90deg,' + backColor + ' 50%,transparent 50%,transparent),linear-gradient(' + nextdeg + ',' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')'));
+                    setBackgroundImage('linear-gradient(90deg,' + backColor + ' 50%,transparent 50%,transparent),linear-gradient(' + nextdeg + ',' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')');
                 } else {
                     let nextdeg = (-90 + (increment * (i - half))) + 'deg';
-                    dispatch(updateBackgroundImage('linear-gradient(' + nextdeg + ',' + barColor + ' 50%,transparent 50%,transparent),linear-gradient(270deg,' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')'));
+                    setBackgroundImage('linear-gradient(' + nextdeg + ',' + barColor + ' 50%,transparent 50%,transparent),linear-gradient(270deg,' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')');
                 }
             }
         }, 1000);
