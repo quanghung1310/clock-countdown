@@ -1,25 +1,24 @@
-import logo from './logo.svg';
+import { useDispatch, useSelector } from 'react-redux';
 import './App.css';
+import Clock from './components/Clock';
+import InputForm from './components/InputForm';
+import { setTimer } from './redux/actions/clock';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const timer = useSelector(state => state.clock.timer);
+    const dispatch = useDispatch();
+
+    function handleFormSubmit(formValue) {
+        const action = setTimer(formValue.minutes);
+        dispatch(action);
+    }
+
+    return (
+        <div>
+            <Clock timer={parseInt(timer)}></Clock>
+            <InputForm onSubmit={handleFormSubmit}></InputForm>
+        </div>
+    );
 }
 
 export default App;
