@@ -90,19 +90,17 @@ function Clock(props) {
                 setSeconds(sec => sec - 1);
                 setMinutes(Math.floor(seconds/60));
 
+                setPie(prePie => prePie + (100 / 60));
                 if (pie >= 101) {
-                    setPie(100/60);
-                } else {
-                    setPie(prePie => prePie + (100 / 60));
+                    setPie(100/30);
                 }
-                console.log(pie + '__' + seconds);
 
                 let step = 1;
                 let loops = Math.round(100 / step);
                 let increment = 360 / loops;
                 let half = Math.round(loops / 2);
-                let i = (pie.toFixed(3).slice(0, -3)) - 1;
-                console.log(i);
+                let i = (pie.toFixed(2).slice(0, -3)) - 1;
+                console.log(i + '__' + pie + '__' + seconds);
                 if (i < half) {
                     let nextdeg = (90 + (increment * i)) + 'deg';
                     setBackgroundImage('linear-gradient(90deg,' + backColor + ' 50%,transparent 50%,transparent),linear-gradient(' + nextdeg + ',' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')');
