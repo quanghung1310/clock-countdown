@@ -1,8 +1,5 @@
 const initialState = {
-    timer: null,
-    minutes: 0,
-    seconds: 0,
-    valueInput: 0,
+    timer: 0,
 };
 
 const clockReducer = (state = initialState, action) => {
@@ -10,23 +7,9 @@ const clockReducer = (state = initialState, action) => {
         case 'SET_TIMER':
             const minutes = action.payload;
             if (!minutes) return state;
-            const timer = new Date(new Date().getTime() + minutes * 60000).getTime();
             return {
                 ...state,
-                timer: timer,
-                valueInput: minutes,
-            };
-        case 'SET_MINUTES':
-            const newMinutes = action.payload;
-            return {
-                ...state,
-                minutes: newMinutes
-            };
-        case 'SET_SECONDS':
-            const newSeconds = action.payload;
-            return {
-                ...state,
-                seconds: newSeconds
+                timer: parseInt(minutes),
             };
         default:
             return state;

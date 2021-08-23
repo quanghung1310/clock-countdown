@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { setMinutes, setSeconds, setTimer } from '../../redux/actions/clock';
+import { setTimer } from '../../redux/actions/clock';
 
 const barColor = '#ec366b';
 const backColor = '#feeff4';
@@ -69,49 +69,39 @@ const Count = styled.span`
 
 function Clock(props) {
     const timer = useSelector(state => state.clock.timer);
-    const secondsState = useSelector(state => state.clock.seconds);
-    const minutesState = useSelector(state => state.clock.minutes);
-    const valueInput = useSelector(state => state.clock.valueInput);
-    const [pie, setPie] = useState(0);
+    const [seconds, setSeconds] = useState(0);
+    const [minutes, setMinutes] = useState(0);
+    const [pie, setPie] = useState(100 / 60);
     const [backgroundImage, setBackgroundImage] = useState('');
     const dispatch = useDispatch();
 
     let clockInterval = useRef();
 
-    const lop = valueInput * 60;
-
     const startTimer = () => {
         if (!timer) return;
     
         clockInterval = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = timer - now + 1000;
-    
-            const days = Math.floor(distance / (1000 * 60 * 60 *24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            if (distance < 0) {
+            if (seconds === 0) {
                 clearInterval(clockInterval.current);
+                dispatch(setTimer(0));
                 setBackgroundImage('none');
+                setPie(100/60);
             } else {
-                dispatch(setMinutes((days * 24 * 60) + (hours * 60) + minutes));
-                dispatch(setSeconds(seconds));
+                setSeconds(sec => sec - 1);
+                setMinutes(Math.floor(seconds/60));
 
-                if (minutes > 1) {
-                    setPie(prePie => prePie + (100 / (lop/valueInput)));
-                } else {
-                    setPie(prePie => prePie + (100 / lop));
-                }
                 if (pie >= 101) {
-                    setPie(1);
+                    setPie(100/60);
+                } else {
+                    setPie(prePie => prePie + (100 / 60));
                 }
+                console.log(pie + '__' + seconds);
 
                 let step = 1;
                 let loops = Math.round(100 / step);
                 let increment = 360 / loops;
                 let half = Math.round(loops / 2);
-                let i = pie.toFixed(2).slice(0, -3);
+                let i = (pie.toFixed(3).slice(0, -3)) - 1;
                 console.log(i);
                 if (i < half) {
                     let nextdeg = (90 + (increment * i)) + 'deg';
@@ -123,6 +113,11 @@ function Clock(props) {
             }
         }, 1000);
     }
+
+    useEffect(() => {
+        setSeconds(timer * 60);
+        setMinutes(timer);
+    }, [timer]);
 
     useEffect(() => {
         startTimer();
@@ -137,10 +132,10 @@ function Clock(props) {
     return (
         <ClockWrap>
             <ClockStyle backgroundImage={backgroundImage}>
-                <Count seconds={secondsState}
-                    minutes={minutesState}
+                <Count seconds={seconds}
+                    minutes={minutes}
                 >
-                    {minutesState > 0 ? minutesState : secondsState}
+                    {minutes > 0 ? minutes : seconds}
                 </Count>
             </ClockStyle>
         </ClockWrap>

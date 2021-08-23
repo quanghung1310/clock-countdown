@@ -4,17 +4,3 @@ export const setTimer = (timer) => {
         payload: timer
     }
 };
-
-export const setMinutes = (minutes) => {
-    return {
-        type: 'SET_MINUTES',
-        payload: minutes
-    };
-};
-
-export const setSeconds = (seconds) => {
-    return {
-        type: 'SET_SECONDS',
-        payload: seconds
-    };
-};
