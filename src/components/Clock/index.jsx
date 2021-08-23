@@ -1,9 +1,7 @@
-import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { updatePie } from '../../redux/actions/animation';
-import { setMinutes, setSeconds } from '../../redux/actions/clock';
+import { setMinutes, setSeconds, setTimer } from '../../redux/actions/clock';
 
 const barColor = '#ec366b';
 const backColor = '#feeff4';
@@ -69,20 +67,12 @@ const Count = styled.span`
     }
 `;
 
-Clock.propTypes = {
-    timer: PropTypes.number,
-};
-
-Clock.defaultProps = {
-    timer: 0,
-};
-
 function Clock(props) {
-    const {timer} = props;
+    const timer = useSelector(state => state.clock.timer);
     const secondsState = useSelector(state => state.clock.seconds);
     const minutesState = useSelector(state => state.clock.minutes);
     const valueInput = useSelector(state => state.clock.valueInput);
-    const pie = useSelector(state => state.animation.pie);
+    const [pie, setPie] = useState(0);
     const [backgroundImage, setBackgroundImage] = useState('');
     const dispatch = useDispatch();
 
@@ -108,23 +98,21 @@ function Clock(props) {
                 dispatch(setMinutes((days * 24 * 60) + (hours * 60) + minutes));
                 dispatch(setSeconds(seconds));
 
-                let newPie;
                 if (minutes > 1) {
-                    newPie = pie + (100 / (lop/valueInput));
+                    setPie(prePie => prePie + (100 / (lop/valueInput)));
                 } else {
-                    newPie = pie + (100 / lop);
+                    setPie(prePie => prePie + (100 / lop));
                 }
                 if (pie >= 101) {
-                    newPie = 1;
+                    setPie(1);
                 }
-
-                dispatch(updatePie(newPie));
 
                 let step = 1;
                 let loops = Math.round(100 / step);
                 let increment = 360 / loops;
                 let half = Math.round(loops / 2);
-                let i = (pie.toFixed(2).slice(0, -3));
+                let i = pie.toFixed(2).slice(0, -3);
+                console.log(i);
                 if (i < half) {
                     let nextdeg = (90 + (increment * i)) + 'deg';
                     setBackgroundImage('linear-gradient(90deg,' + backColor + ' 50%,transparent 50%,transparent),linear-gradient(' + nextdeg + ',' + barColor + ' 50%,' + backColor + ' 50%,' + backColor + ')');
@@ -141,7 +129,8 @@ function Clock(props) {
         
         return () => {
             // Clean up
-            clearInterval(clockInterval)
+            clearInterval(clockInterval);
+            dispatch(setTimer(0));
         }
     });
 

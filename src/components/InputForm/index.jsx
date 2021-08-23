@@ -1,7 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { setTimer } from '../../redux/actions/clock';
 
@@ -35,30 +33,14 @@ const BtnInput = styled.input`
     text-transform: uppercase;
 `;
 
-InputForm.propTypes = {
-    onSubmit: PropTypes.func,
-};
-
-InputForm.defaultProps = {
-    onSubmit: null,
-};
-
 function InputForm(props) {
-    const { onSubmit } = props;
-    const timer = useSelector(state => state.clock.timer);
     const [value, setValue] = useState(1);
     const dispatch = useDispatch();
 
     function handleSubmit(e) {
         e.preventDefault();
 
-        if (!timer) {
-            onSubmit({minutes: 1});
-        } else {
-            onSubmit({minutes: parseInt(value)});
-        }
-
-        dispatch(setTimer(value));
+        dispatch(setTimer(parseInt(value)));
     }
 
     return (
